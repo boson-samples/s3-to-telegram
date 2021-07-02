@@ -1,6 +1,6 @@
 # Send AWS S3 bucket data to Telegram with OpenShift Serverless Functions
 
-To demonstrate some of these capabilities we will implement a very simple Quarkus function, that will consume data from an AWS S3 bucket and send it to Telegram chat.
+This demo implements a very simple Quarkus function, that consumes data from an AWS S3 bucket and sends it to Telegram chat.
 
 ## Setup
 
