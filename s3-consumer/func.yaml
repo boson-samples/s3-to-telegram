@@ -1,0 +1,16 @@
+name: s3-consumer
+namespace: ""
+runtime: quarkus
+image: docker.io/zroubalik/s3-consumer:latest
+imageDigest: sha256:5c2662ec9100656afc26ffd05273e0876b50fb58fb8157d32486347125b53372
+builder: quay.io/boson/faas-jvm-builder:v0.8.3
+builderMap:
+  default: quay.io/boson/faas-jvm-builder:v0.8.3
+  jvm: quay.io/boson/faas-jvm-builder:v0.8.3
+  native: quay.io/boson/faas-quarkus-native-builder:v0.8.3
+volumes: []
+envs:
+- name: TELEGRAM_API_KEY
+  value: '{{ secret:telegram-api:TELEGRAM_API_KEY }}'
+annotations: {}
+options: {}

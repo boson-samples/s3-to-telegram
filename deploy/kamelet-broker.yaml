@@ -1,0 +1,94 @@
+apiVersion: camel.apache.org/v1alpha1
+kind: KameletBinding
+metadata:
+  name: kamelet-aws-s3-source
+  namespace: demo
+spec:
+  source:
+    ref:
+      apiVersion: camel.apache.org/v1alpha1
+      kind: Kamelet
+      name: aws-s3-source
+    properties:
+      accessKey: AWS_ACCESS_KEY
+      autoCreateBucket: false
+      bucketNameOrArn: AWS_BUCKET_NAME
+      deleteAfterRead: true
+      region: AWS_REGION
+      secretKey: AWS_SECRET_KEY
+  sink:
+    ref:
+      apiVersion: eventing.knative.dev/v1
+      kind: Broker
+      name: default
+
+---
+apiVersion: camel.apache.org/v1alpha1
+kind: Kamelet
+metadata:
+  annotations:
+    camel.apache.org/kamelet.icon: >-
+      data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjAiIHk9IjAiIHZpZXdCb3g9IjAgMCAyNDguMiAzMDAiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxzdHlsZT4uc3QyOHtmaWxsOiM4YzMxMjN9LnN0Mjl7ZmlsbDojZTA1MjQzfTwvc3R5bGU+PHBhdGggY2xhc3M9InN0MjgiIGQ9Ik0yMCA1Mi4xTDAgNjJ2MTc1LjVsMjAgOS45LjEtLjFWNTIuMmwtLjEtLjEiLz48cGF0aCBjbGFzcz0ic3QyOSIgZD0iTTEyNyAyMjJMMjAgMjQ3LjVWNTIuMUwxMjcgNzd2MTQ1Ii8+PHBhdGggY2xhc3M9InN0MjgiIGQ9Ik03OC43IDE4Mi4xbDQ1LjQgNS44LjMtLjcuMy03NC40LS41LS42LTQ1LjQgNS43LS4xIDY0LjIiLz48cGF0aCBjbGFzcz0ic3QyOCIgZD0iTTEyNC4xIDIyMi4zbDEwNC4xIDI1LjIuMi0uM1Y1Mi4xbC0uMi0uMi0xMDQuMSAyNS40djE0NSIvPjxwYXRoIGNsYXNzPSJzdDI5IiBkPSJNMTY5LjUgMTgyLjFsLTQ1LjQgNS44di03NS43bDQ1LjQgNS43djY0LjIiLz48cGF0aCBkPSJNMTY5LjUgODYuOWwtNDUuNCA4LjMtNDUuNC04LjNMMTI0IDc1bDQ1LjUgMTEuOSIgZmlsbD0iIzVlMWYxOCIvPjxwYXRoIGQ9Ik0xNjkuNSAyMTMuMWwtNDUuNC04LjMtNDUuNCA4LjMgNDUuMyAxMi43IDQ1LjUtMTIuNyIgZmlsbD0iI2YyYjBhOSIvPjxwYXRoIGNsYXNzPSJzdDI4IiBkPSJNNzguNyA4Ni45bDQ1LjQtMTEuMi40LS4xVi4zbC0uNC0uMy00NS40IDIyLjd2NjQuMiIvPjxwYXRoIGNsYXNzPSJzdDI5IiBkPSJNMTY5LjUgODYuOWwtNDUuNC0xMS4yVjBsNDUuNCAyMi43djY0LjIiLz48cGF0aCBjbGFzcz0ic3QyOCIgZD0iTTEyNC4xIDMwMGwtNDUuNC0yMi43di02NC4ybDQ1LjQgMTEuMi43LjgtLjIgNzMuNi0uNSAxLjMiLz48cGF0aCBjbGFzcz0ic3QyOSIgZD0iTTEyNC4xIDMwMGw0NS40LTIyLjd2LTY0LjJsLTQ1LjQgMTEuMlYzMDBNMjI4LjIgNTIuMWwyMCAxMHYxNzUuNWwtMjAgMTBWNTIuMSIvPjwvc3ZnPg==
+    camel.apache.org/provider: Apache Software Foundation
+    camel.apache.org/version: 1.4.0
+  name: aws-s3-source
+  namespace: demo
+spec:
+  definition:
+    description: Receive data from AWS S3.
+    properties:
+      accessKey:
+        description: The access key obtained from AWS
+        title: Access Key
+        type: string
+        x-descriptors:
+          - 'urn:alm:descriptor:com.tectonic.ui:password'
+      autoCreateBucket:
+        default: false
+        description: Setting the autocreation of the S3 bucket bucketName.
+        title: Autocreate bucket
+        type: boolean
+        x-descriptors:
+          - 'urn:alm:descriptor:com.tectonic.ui:checkbox'
+      bucketNameOrArn:
+        description: The S3 Bucket name or ARN
+        title: Bucket Name
+        type: string
+      deleteAfterRead:
+        default: true
+        description: Delete objects after consuming them
+        title: Auto-delete objects
+        type: boolean
+        x-descriptors:
+          - 'urn:alm:descriptor:com.tectonic.ui:checkbox'
+      region:
+        description: The AWS region to connect to
+        example: eu-west-1
+        title: AWS Region
+        type: string
+      secretKey:
+        description: The secret key obtained from AWS
+        title: Secret Key
+        type: string
+        x-descriptors:
+          - 'urn:alm:descriptor:com.tectonic.ui:password'
+    required:
+      - bucketNameOrArn
+      - accessKey
+      - secretKey
+      - region
+    title: AWS S3 Source
+  flow:
+    from:
+      parameters:
+        accessKey: '{{accessKey}}'
+        autoCreateBucket: '{{autoCreateBucket}}'
+        deleteAfterRead: '{{deleteAfterRead}}'
+        region: '{{region}}'
+        secretKey: '{{secretKey}}'
+      steps:
+        - to: 'kamelet:sink'
+      uri: 'aws2-s3:{{bucketNameOrArn}}'
+  types:
+    out:
+      mediaType: application/json
